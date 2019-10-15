@@ -5,9 +5,9 @@ The game was inspired by Settlers II™ (© Bluebyte) but has significantly more
 ![Widelands Screenshot](https://www.widelands.org/static/img/welcome.jpg)
 
 
-## License
+## License [![License](https://img.shields.io/github/license/widelands/widelands.svg?color=blue)](LICENCE)
 
-GPL v2+. Some at assets are released under various Creative Commons licenses – see the respective folders.
+GPL v2+. Some assets are released under various Creative Commons licenses – see the respective folders.
 
 ## Download
 
@@ -15,7 +15,12 @@ On how to download Widelands, see https://www.widelands.org/wiki/Download/
 
 ## Compiling
 
-We support compiling Widelands for Linux, Windows under MSys2, and MacOs with GCC >= 4.8 or Clang/LLVM >= 3.4, though it might work with other compilers too. You will need to install the following dependencies:
+We support compiling Widelands for Linux, Windows under MSys2, and MacOs with GCC >= 4.8 or Clang/LLVM >= 3.4, though it might work with other compilers too. We have more detailed documentation available at: https://www.widelands.org/wiki/BuildingWidelands/
+
+
+### Dependencies
+
+You will need to install the following dependencies:
 
 *  [libSDL](http://www.libsdl.org/) >=2.0
 *  [libSDL_image](http://www.libsdl.org/projects/SDL_image) 
@@ -29,6 +34,9 @@ We support compiling Widelands for Linux, Windows under MSys2, and MacOs with GC
 *  [Python](http://www.python.org) >= 1.5.2
 *  [libglew](http://glew.sourceforge.net) or [glbinding](https://glbinding.org/)
 
+
+### Compiling with our convenience script
+
 You can then compile by running our convenience script.
 
 | Command | Purpose |
@@ -37,7 +45,77 @@ You can then compile by running our convenience script.
 | `./compile.sh -r -w` | Release build |
 | `./compile.sh -h` | List available options |
 
-Read more: https://www.widelands.org/wiki/BuildingWidelands/
+When compiling has finished, you can call Widelands with
+
+~~~~
+./widelands
+~~~~
+
+### Compiling with CMake
+
+You can also call CMake manually:
+
+~~~~
+mkdir build
+cd build
+cmake ..
+make
+~~~~
+
+When compiling has finished, you can call Widelands with
+
+~~~~
+cd ..
+mv build/src/widelands .
+./widelands
+~~~~
+
+We have various CMake options available. For example, to create a release build, call
+
+~~~~
+cmake -DCMAKE_BUILD_TYPE=Release ..
+~~~~
+
+For using the Ninja build system, call
+
+~~~~
+mkdir build
+cd build
+cmake -G Ninja ..
+ninja
+~~~~
+
+Depending on the Ninja installation, the last line can also be `ninja-build`.
+
+#### CMake options
+
+Note that CMake options are prefixed with `-D`. These are the available options:
+
+| Name | Values | Default| Function
+| --- | --- | --- | --- |
+| `CMAKE_BUILD_TYPE` | `Debug`/`Release` | `Debug` | Create a release or debug build |
+| `OPTION_ASAN` | `ON`/`OFF` | `ON` for Debug builds /`OFF` for Release builds | Use AddressSanitizer. Switching this off only works once. You will have to clear the `build` directory if you want to switch this off again in a later build. |
+| `OPTION_BUILD_TRANSLATIONS` | `ON`/`OFF` | `ON` | Build translations |
+| `OPTION_BUILD_CODECHECK` | `ON`/`OFF` | `ON` | Build codecheck. Only available in Debug builds. |
+| `OPTION_BUILD_WEBSITE_TOOLS` | `ON`/`OFF` | `ON` | Build website-related tools |
+| `OPTION_BUILD_TESTS` | `ON`/`OFF` | `ON` | Build Boost tests |
+| `CMAKE_INSTALL_PREFIX` | A directory | See [CMake documentation](https://cmake.org/cmake/help/latest/variable/CMAKE_INSTALL_PREFIX.html) | Define the target directory for the "install" target, e.g. `-DCMAKE_INSTALL_PREFIX=~/widelands-install`. |
+| `WL_VERSION` | A version string | Autodetected from git/bzr, or set by adding a `VERSION` file | Define the Widelands version |
+| `USE_XDG` | `ON`/`OFF` | `ON` | Follow XDG-Basedir specification. Only available on Linux. |
+| `OPTION_USE_GLBINDING` | `ON`/`OFF` | `OFF` | Use glbinding instead of GLEW |
+| `OPTION_GLEW_STATIC` | `ON`/`OFF` | `OFF` | Use static GLEW Library |
+
+#### make/ninja targets
+
+You can add targets to the `make` or `ninja` command, e.g. `make lang` to build only the translations. These are the available targets:
+
+| Name | Function |
+| --- | --- |
+| `ALL` or no target | Compile everything, up to executable with the settings from the `cmake` call |
+| `codecheck` | Run the codechecks (currently broken) |
+| `doc` | Generate Doxygen documentation. Currently only with Build Type Debug, but this is easily changed if necessary. |
+| `install` | Install into the target dir, this is `/usr/local` per default (you need root privileges!) unless you change it (see CMake options above) |
+| `lang` | Generate the translations |
 
 ## Contributing
 
@@ -65,6 +143,14 @@ For contributing art, see https://www.widelands.org/wiki/GraphicsDevelopment/
 
 For contributing translations, see https://www.widelands.org/wiki/TranslatingWidelands/
 
+### Testing
+
+For helping with testing, see https://www.widelands.org/wiki/TestingBranches/
+
+### Triaging Issues
+
+For helping with issue management, see https://www.widelands.org/wiki/TriagingBugs/
+
 ## Directory Structure
 
 | Directory | Contents |
@@ -79,4 +165,7 @@ For contributing translations, see https://www.widelands.org/wiki/TranslatingWid
 | utils | Diverse utilities: Building translations, code formatting, packaging Mac & Windows, ... |
 
 
+## Obtaining Travis and AppVeyor builds
+
+Travis and AppVeyor builds are triggered for all pull requests and for new pushes to the `master` branch. If you want to get a build without making a pull request, temporarily add the name of your branch to the `branches` section in `.travis.yml`/`appveyor.yml`. This will not work if the branch is in a fork though.
 
